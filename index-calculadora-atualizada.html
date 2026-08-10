@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora — Secretária Remota</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#1a7a5e;--green-light:#e6f4ef;--green-mid:#0f5c46;
+  --text:#1a1a1a;--text2:#5a5a5a;--text3:#9a9a9a;
+  --border:#e0e0e0;--bg:#fafaf8;--white:#ffffff;
+  --radius:10px;--radius-lg:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0}
+
+/* HEADER */
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:20px 0;position:sticky;top:0;z-index:100}
+.header-inner{max-width:760px;margin:auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);letter-spacing:-.3px}
+.logo span{color:var(--green)}
+.header-sub{font-size:12px;color:var(--text3)}
+
+/* HERO */
+.hero{background:var(--white);padding:48px 24px 40px;text-align:center;border-bottom:1px solid var(--border)}
+.hero h1{font-family:'DM Serif Display',serif;font-size:36px;color:var(--text);line-height:1.2;margin-bottom:12px;letter-spacing:-.5px}
+.hero p{font-size:15px;color:var(--text2);max-width:480px;margin:auto;line-height:1.7}
+
+/* MAIN */
+.main{max-width:760px;margin:0 auto;padding:40px 24px 80px}
+
+/* STEP */
+.step{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;transition:box-shadow .2s}
+.step:hover{box-shadow:0 2px 16px rgba(0,0,0,.06)}
+.step-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.step-num{width:28px;height:28px;border-radius:50%;background:var(--green);color:white;font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-title{font-size:15px;font-weight:500;color:var(--text)}
+.step-desc{font-size:12px;color:var(--text3);margin-top:2px}
+
+/* NICHO GRID */
+.nichos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.nc{border:1px solid var(--border);border-radius:var(--radius);padding:16px 14px;cursor:pointer;transition:all .15s;background:var(--bg);text-align:center}
+.nc:hover{border-color:#aaa;background:var(--white)}
+.nc.sel{border-color:var(--green);background:var(--green-light);box-shadow:0 0 0 3px rgba(26,122,94,.1)}
+.nc-icon{font-size:24px;margin-bottom:8px;line-height:1}
+.nc-name{font-size:13px;font-weight:500;color:var(--text)}
+.nc-taxa{font-size:11px;color:var(--text3);margin-top:3px}
+.nc.sel .nc-taxa{color:var(--green)}
+
+/* NICHO INFO */
+.nicho-info-box{background:var(--green-light);border-left:3px solid var(--green);border-radius:0 var(--radius) var(--radius) 0;padding:12px 16px;font-size:13px;color:var(--text2);line-height:1.7;display:none;margin-top:12px}
+
+/* SERVICOS */
+.servs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.servs-grid{grid-template-columns:1fr}}
+.sv{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--border);border-radius:var(--radius);padding:14px;cursor:pointer;background:var(--bg);transition:all .15s}
+.sv:hover{border-color:#aaa;background:var(--white)}
+.sv.sel{border-color:var(--green);background:var(--green-light)}
+.sv-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;color:transparent;font-size:11px}
+.sv.sel .sv-check{background:var(--green);border-color:var(--green);color:white}
+.sv-body .sv-name{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+.sv-body .sv-price{font-size:11px;color:var(--text3);margin-top:3px}
+.sv.sel .sv-price{color:var(--green-mid)}
+.sv-tag{display:inline-block;font-size:10px;background:var(--green);color:white;border-radius:3px;padding:1px 6px;margin-left:5px;vertical-align:middle;font-weight:400}
+.sv-consult{font-size:11px;color:var(--text3);font-style:italic}
+
+/* OPTION CARDS (fuso, horário etc) */
+.opts-row{display:grid;gap:10px}
+.opts-row.cols2{grid-template-columns:1fr 1fr}
+.opts-row.cols3{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:480px){.opts-row.cols2,.opts-row.cols3{grid-template-columns:1fr}}
+.opt{border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;text-align:center;transition:all .15s;background:var(--bg)}
+.opt:hover{border-color:#aaa;background:var(--white)}
+.opt.sel{border-color:var(--green);background:var(--green-light)}
+.opt-icon{font-size:22px;margin-bottom:6px}
+.opt-name{font-size:13px;font-weight:500;color:var(--text)}
+.opt-desc{font-size:11px;color:var(--text3);margin-top:3px;line-height:1.5}
+.opt.sel .opt-desc{color:var(--green-mid)}
+
+/* TOGGLE (sim/não) */
+.toggle-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.toggle-label{font-size:13px;color:var(--text2);flex:1;min-width:200px;line-height:1.6}
+.toggle-btns{display:flex;gap:8px;flex-shrink:0}
+.tbtn{border:1px solid var(--border);border-radius:var(--radius);padding:8px 20px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);background:var(--bg);transition:all .15s}
+.tbtn:hover{border-color:#aaa}
+.tbtn.sel-yes{background:var(--green);border-color:var(--green);color:white}
+.tbtn.sel-no{background:#f2f2f2;border-color:#ccc;color:var(--text)}
+.desconto-badge{font-size:12px;background:#d4edda;color:#1a5c35;border-radius:4px;padding:3px 8px;display:inline-block;margin-top:8px}
+
+/* RANGE */
+.range-wrap{margin-top:4px}
+.range-info{display:flex;justify-content:space-between;margin-bottom:10px}
+.range-info span{font-size:13px;color:var(--text2)}
+.range-info strong{font-size:15px;font-weight:500;color:var(--text)}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;border-radius:2px;background:#e0e0e0;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--green);cursor:pointer;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.range-hint{font-size:12px;color:var(--text3);margin-top:8px}
+
+/* RESULTADO */
+.resultado{display:none;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-top:8px}
+.res-header{background:var(--green);color:white;padding:24px 28px}
+.res-header h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:4px}
+.res-header p{font-size:13px;opacity:.8}
+.res-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
+@media(max-width:480px){.res-cards{grid-template-columns:1fr}}
+.res-card{background:var(--white);padding:20px;text-align:center}
+.res-card .rl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.res-card .rv{font-size:24px;font-weight:300;color:var(--text)}
+.res-card .rv.highlight{color:var(--green);font-family:'DM Serif Display',serif;font-size:28px}
+.res-body{padding:24px 28px}
+.res-section{margin-bottom:16px}
+.res-section-title{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px}
+.res-line{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;color:var(--text2);padding:5px 0;border-bottom:1px solid #f5f5f5}
+.res-line:last-child{border-bottom:none}
+.res-line .key{color:var(--text)}
+.res-line .val{font-weight:500;color:var(--text)}
+.res-line.discount .val{color:var(--green)}
+.res-line.surcharge .val{color:#b85c00}
+.res-total{background:var(--bg);border-top:1px solid var(--border);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.res-total .label{font-size:14px;font-weight:500;color:var(--text)}
+.res-total .value{font-family:'DM Serif Display',serif;font-size:28px;color:var(--green)}
+.res-actions{padding:20px 28px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:480px){.res-actions{grid-template-columns:1fr}}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;border:none;text-decoration:none}
+.btn-outline{background:var(--white);border:1px solid var(--border);color:var(--text)}
+.btn-outline:hover{background:var(--bg);border-color:#aaa}
+.btn-green{background:var(--green);color:white}
+.btn-green:hover{background:var(--green-mid)}
+.res-note{padding:16px 28px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);line-height:1.6;text-align:center}
+
+/* DIVIDER */
+.section-gap{height:1px}
+
+/* HIDDEN */
+.hidden{display:none}
+
+/* FOOTER */
+.footer{text-align:center;padding:40px 24px;font-size:12px;color:var(--text3);border-top:1px solid var(--border);background:var(--white);margin-top:40px}
+/* HORAS TABS */
+#tab-mensal:hover, #tab-custom:hover { opacity: .85; }
+.horas-custom-input:focus { border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(26,122,94,.1); }
+/* OPERAÇÃO */
+.op-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.op-badge{display:inline-block;font-size:11px;font-weight:500;border-radius:4px;padding:3px 9px;margin-top:6px}
+.op-badge.mensal{background:#e6f4ef;color:#0f5c46}
+.op-badge.projeto{background:#fff3e0;color:#b45309}
+/* DIAS MULTI-SELECT */
+.dias-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:10px}
+.dia-opt{border:1px solid var(--border);border-radius:var(--radius);padding:11px 13px;cursor:pointer;transition:all .15s;background:var(--bg);display:flex;align-items:center;gap:10px}
+.dia-opt:hover{border-color:#aaa;background:var(--white)}
+.dia-opt.sel{border-color:var(--green);background:var(--green-light)}
+.dia-check{width:16px;height:16px;border:1.5px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all .15s}
+.dia-opt.sel .dia-check{background:var(--green);border-color:var(--green);color:white}
+.dia-body .dia-name{font-size:13px;font-weight:500;color:var(--text)}
+.dia-body .dia-extra{font-size:11px;color:var(--text3);margin-top:2px}
+.dia-opt.sel .dia-extra{color:var(--green-mid)}
+.dias-resumo{font-size:12px;color:var(--text3);margin-top:8px;min-height:18px}
+.limite-alerta{display:none;background:#fff8e6;border:1px solid #efd28a;border-radius:var(--radius-lg);padding:22px 24px;margin-top:8px;color:#725400;line-height:1.6}
+.limite-alerta h2{font-family:'DM Serif Display',serif;font-size:21px;font-weight:400;color:#725400;margin-bottom:6px}
+.limite-alerta p{font-size:13px;margin-bottom:14px}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">secretária<span>remota</span></div>
+    <div class="header-sub">Calculadora de investimento</div>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>Quanto vale o suporte<br>que o seu negócio precisa?</h1>
+  <p>Selecione seu segmento e personalize os serviços. Veja em tempo real o valor justo — sem surpresas.</p>
+</div>
+
+<main class="main">
+
+<!-- STEP 1: NICHO -->
+<div class="step">
+  <div class="step-head">
+    <div class="step-num">1</div>
+    <div>
+      <div class="step-title">Qual é o segmento do seu negócio?</div>
+      <div class="step-desc">O nicho determina o nível de especialização necessário</div>
+    </div>
+  </div>
+  <div class="nichos-grid" id="nichos-grid"></div>
+  <div class="nicho-info-box" id="nicho-info"></div>
+</div>
+
+<!-- CAPACIDADE: planos compactos -->
+<div class="step" id="step-capacidade" style="display:none">
+  <div class="step-head">
+    <div class="step-num">1a</div>
+    <div>
+      <div class="step-title">Capacidade de atendimento</div>
+      <div class="step-desc">Exclusivo para os planos compactos</div>
+    </div>
+  </div>
+  <div class="opts-row cols2" style="align-items:end">
+    <div>
+      <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">Clientes por dia</label>
+      <input type="number" id="clientes-dia" min="1" max="99" value="1" style="width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:15px;font-weight:500;color:var(--text);background:var(--bg);outline:none">
+    </div>
+    <div class="nicho-info-box" style="display:block;margin:0">Este plano atende até <strong>10 clientes por dia</strong> e até <strong>3 horas por dia</strong>. Acima disso, elaboramos uma contratação personalizada.</div>
+  </div>
+</div>
+
+<!-- STEP 2: SERVIÇOS -->
+<div class="step" id="step-servicos" style="display:none">
+  <div class="step-head">
+    <div class="step-num">2</div>
+    <div>
+      <div class="step-title">Quais serviços você precisa?</div>
+      <div class="step-desc">Selecione um ou mais — o total é calculado automaticamente</div>
+    </div>
+  </div>
+  <div class="servs-grid" id="servs-grid"></div>
+</div>
+
+<!-- STEP 2b: TIPO DE OPERAÇÃO -->
+<div class="step" id="step-operacao" style="display:none">
+  <div class="step-head">
+    <div class="step-num">2b</div>
+    <div>
+      <div class="step-title">Tipo de contratação</div>
+      <div class="step-desc">Define como o investimento é calculado</div>
+    </div>
+  </div>
+  <div class="op-cards">
+    <div class="opt sel" data-op="mensal" onclick="selOperacao(this,'mensal')">
+      <div class="opt-icon">🔄</div>
+      <div class="opt-name">Operação contínua</div>
+      <div class="opt-desc">Contrato mensal recorrente. Descontos e adicionais aplicados normalmente.</div>
+      <div class="op-badge mensal">Mensal</div>
+    </div>
+    <div class="opt" data-op="projeto" onclick="selOperacao(this,'projeto')">
+      <div class="opt-icon">🎯</div>
+      <div class="opt-name">Apenas o projeto</div>
+      <div class="opt-desc">Entrega única, sem fidelização. Fator 1,2× — sem descontos.</div>
+      <div class="op-badge projeto">Avulso</div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2c: DIAS DE ATENDIMENTO -->
+<div class="step" id="step-dias" style="display:none">
+  <div class="step-head">
+    <div class="step-num">2c</div>
+    <div>
+      <div class="step-title">Dias de atendimento</div>
+      <div class="step-desc">Selecione um ou mais — os adicionais são somados</div>
+    </div>
+  </div>
+  <div class="dias-grid">
+    <div class="dia-opt sel" data-dia="uteis" onclick="togDia(this,'uteis')">
+      <div class="dia-check">✓</div>
+      <div class="dia-body"><div class="dia-name">Dias úteis</div><div class="dia-extra">Seg–Sex · Base (sem adicional)</div></div>
+    </div>
+    <div class="dia-opt" data-dia="fds" onclick="togDia(this,'fds')">
+      <div class="dia-check">✓</div>
+      <div class="dia-body"><div class="dia-name">Fins de semana</div><div class="dia-extra">Sáb e Dom · +20%</div></div>
+    </div>
+    <div class="dia-opt" data-dia="feriado" onclick="togDia(this,'feriado')">
+      <div class="dia-check">✓</div>
+      <div class="dia-body"><div class="dia-name">Feriados</div><div class="dia-extra">Nacionais e estaduais · +40%</div></div>
+    </div>
+    <div class="dia-opt" data-dia="sabado" onclick="togDia(this,'sabado')">
+      <div class="dia-check">✓</div>
+      <div class="dia-body"><div class="dia-name">Somente sábados</div><div class="dia-extra">Exceto feriados · sem adicional</div></div>
+    </div>
+  </div>
+  <div class="dias-resumo" id="dias-resumo">✔ Dias úteis selecionados — sem adicional</div>
+</div>
+
+<!-- STEP 3: SISTEMA WHATSAPP -->
+<div class="step" id="step-wpp" style="display:none">
+  <div class="step-head">
+    <div class="step-num">3</div>
+    <div>
+      <div class="step-title">Sistema de gestão do WhatsApp</div>
+      <div class="step-desc">Facilita o acesso da assistente sem compartilhar seu número pessoal</div>
+    </div>
+  </div>
+  <div class="toggle-row">
+    <div class="toggle-label">Você usa algum sistema de gestão do WhatsApp (como Zenvia, Wati, Kommo ou similar) e aceita criar um usuário para a assistente?</div>
+    <div class="toggle-btns">
+      <div class="tbtn" id="wpp-sim" onclick="selWpp(true)">Sim</div>
+      <div class="tbtn" id="wpp-nao" onclick="selWpp(false)">Não</div>
+    </div>
+  </div>
+  <div id="wpp-badge" class="hidden" style="margin-top:12px">
+    <span class="desconto-badge">✓ Desconto de 15% aplicado — obrigada pela facilidade!</span>
+  </div>
+</div>
+
+<!-- STEP 4: TEMPO DE RESPOSTA -->
+<div class="step" id="step-resposta" style="display:none">
+  <div class="step-head">
+    <div class="step-num">4</div>
+    <div>
+      <div class="step-title">Tempo de resposta necessário</div>
+      <div class="step-desc">Maior urgência exige maior disponibilidade — e isso tem valor</div>
+    </div>
+  </div>
+  <div class="opts-row cols3" id="resposta-opts">
+    <div class="opt" onclick="selResposta(this,'5min',10)">
+      <div class="opt-icon">⚡</div>
+      <div class="opt-name">Até 5 minutos</div>
+      <div class="opt-desc">Alta urgência — disponibilidade constante<br><strong>+10%</strong></div>
+    </div>
+    <div class="opt" onclick="selResposta(this,'10min',5)">
+      <div class="opt-icon">🕐</div>
+      <div class="opt-name">De 5 a 10 minutos</div>
+      <div class="opt-desc">Urgência moderada — boa disponibilidade<br><strong>+5%</strong></div>
+    </div>
+    <div class="opt" onclick="selResposta(this,'dia',0)">
+      <div class="opt-icon">📅</div>
+      <div class="opt-name">No decorrer do dia</div>
+      <div class="opt-desc">Sem urgência — cumpre no horário combinado<br><strong>Sem adicional</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 5: HORÁRIO -->
+<div class="step" id="step-horario" style="display:none">
+  <div class="step-head">
+    <div class="step-num">5</div>
+    <div>
+      <div class="step-title">Horário de atendimento</div>
+      <div class="step-desc">Atendimento fora do horário comercial tem adicional</div>
+    </div>
+  </div>
+  <div class="opts-row cols2">
+    <div class="opt sel" data-h="com" onclick="selHorario(this,'com',0)">
+      <div class="opt-icon">☀️</div>
+      <div class="opt-name">Horário comercial</div>
+      <div class="opt-desc">Segunda a sexta, 8h–18h<br>Sem adicional</div>
+    </div>
+    <div class="opt" data-h="not" onclick="selHorario(this,'not',30)">
+      <div class="opt-icon">🌙</div>
+      <div class="opt-name">Noturno / madrugada</div>
+      <div class="opt-desc">Horários a partir das 18h<br><strong>+30%</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 6: EXCLUSIVIDADE (só para assistente pessoal) -->
+<div class="step" id="step-exclusividade" style="display:none">
+  <div class="step-head">
+    <div class="step-num">6</div>
+    <div>
+      <div class="step-title">Exclusividade</div>
+      <div class="step-desc">Apenas para o pacote Assistente Pessoal</div>
+    </div>
+  </div>
+  <div class="opts-row cols2">
+    <div class="opt sel" data-ex="nao" onclick="selExclusividade(this,'nao',0)">
+      <div class="opt-icon">🤝</div>
+      <div class="opt-name">Sem exclusividade</div>
+      <div class="opt-desc">Mensagens respondidas no horário combinado. Atendo outros clientes.<br>Sem adicional</div>
+    </div>
+    <div class="opt" data-ex="sim" onclick="selExclusividade(this,'sim',35)">
+      <div class="opt-icon">👑</div>
+      <div class="opt-name">Com exclusividade</div>
+      <div class="opt-desc">Disponível das 8h às 20h para ligações. Mensagens respondidas com razoabilidade.<br><strong>+35%</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 7: FUSO -->
+<div class="step" id="step-fuso" style="display:none">
+  <div class="step-head">
+    <div class="step-num" id="fuso-num">7</div>
+    <div>
+      <div class="step-title">Fuso horário</div>
+      <div class="step-desc">Clientes internacionais exigem adaptação de horário e idioma</div>
+    </div>
+  </div>
+  <div class="opts-row cols2">
+    <div class="opt sel" data-f="br" onclick="selFuso(this,'br',0)">
+      <div class="opt-icon">🇧🇷</div>
+      <div class="opt-name">Brasil</div>
+      <div class="opt-desc">Horário de Brasília<br>Sem adicional</div>
+    </div>
+    <div class="opt" data-f="int" onclick="selFuso(this,'int',30)">
+      <div class="opt-icon">🌍</div>
+      <div class="opt-name">Internacional</div>
+      <div class="opt-desc">Fuso diferente do Brasil<br><strong>+30%</strong></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 8: HORAS -->
+<div class="step" id="step-horas" style="display:none">
+  <div class="step-head">
+    <div class="step-num" id="horas-num">8</div>
+    <div>
+      <div class="step-title">Horas de dedicação por dia</div>
+      <div class="step-desc">Escolha como prefere calcular a dedicação</div>
+    </div>
+  </div>
+  <!-- Abas -->
+  <div style="display:flex;gap:0;margin-bottom:18px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+    <div id="tab-mensal" onclick="selTabHoras('mensal')" style="flex:1;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;text-align:center;background:var(--green);color:white;transition:all .15s">📅 Base mensal (22 dias)</div>
+    <div id="tab-custom" onclick="selTabHoras('custom')" style="flex:1;padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;text-align:center;background:var(--bg);color:var(--text2);transition:all .15s">🎯 Selecionar dias</div>
+  </div>
+  <!-- Painel mensal -->
+  <div id="painel-mensal">
+    <div class="range-wrap">
+      <div class="range-info">
+        <span>Horas por dia</span>
+        <strong id="hval">2h / dia</strong>
+      </div>
+      <input type="range" min="1" max="8" step="1" value="2" id="hrange">
+      <p class="range-hint" id="hhint">≈ 44h/mês · ideal para rotinas básicas</p>
+    </div>
+  </div>
+  <!-- Painel custom -->
+  <div id="painel-custom" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:end">
+      <div>
+        <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">Quantos dias de serviço?</label>
+        <input type="number" id="dias-custom" min="1" max="31" value="7"
+          style="width:100%;border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;font-size:15px;font-weight:500;color:var(--text);background:var(--bg);outline:none"
+          oninput="calcular()">
+      </div>
+      <div>
+        <label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">Horas por dia</label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button onclick="ajustarHorasCustom(-1)" style="width:36px;height:36px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:18px;cursor:pointer;color:var(--text)">−</button>
+          <span id="hval-custom" style="font-size:20px;font-weight:500;color:var(--text);min-width:40px;text-align:center">2h</span>
+          <button onclick="ajustarHorasCustom(1)" style="width:36px;height:36px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);font-size:18px;cursor:pointer;color:var(--text)">+</button>
+        </div>
+      </div>
+    </div>
+    <p class="range-hint" id="hhint-custom" style="margin-top:12px">≈ 14h totais · baseado em 7 dias × 2h</p>
+  </div>
+</div>
+
+<!-- RESULTADO -->
+<div class="limite-alerta" id="limite-alerta" role="alert">
+  <h2>Vamos montar uma proposta personalizada</h2>
+  <p id="limite-alerta-texto"></p>
+  <button class="btn btn-green" onclick="enviarZapLimite()">💬 Falar sobre contratação personalizada</button>
+</div>
+<div class="resultado" id="resultado">
+  <div class="res-header">
+    <h2>Orçamento estimado</h2>
+    <p id="res-subtitle">Calculado com base nas suas seleções</p>
+  </div>
+  <div class="res-cards">
+    <div class="res-card">
+      <div class="rl">Valor por hora</div>
+      <div class="rv highlight" id="r-hora">—</div>
+    </div>
+    <div class="res-card">
+      <div class="rl" id="r-total-label">Total mensal</div>
+      <div class="rv highlight" id="r-total">—</div>
+    </div>
+    <div class="res-card">
+      <div class="rl">Horas / mês</div>
+      <div class="rv" id="r-hmes">—</div>
+    </div>
+  </div>
+  <div class="res-body">
+    <div class="res-section">
+      <div class="res-section-title">Composição do valor</div>
+      <div id="res-linhas"></div>
+    </div>
+  </div>
+  <div class="res-total">
+    <div class="label">Total mensal estimado</div>
+    <div class="value" id="res-total-big">—</div>
+  </div>
+  <div class="res-actions">
+    <button class="btn btn-outline" onclick="exportPDF()">📄 Exportar PDF</button>
+    <button class="btn btn-green" onclick="enviarZap()">💬 Enviar pelo WhatsApp</button>
+    <button class="btn btn-outline" onclick="enviarContraproposta()" style="grid-column:1/-1">🔄 Enviar uma contraproposta</button>
+  </div>
+  <div class="res-note">
+    ⏳ <strong>Validade:</strong> Este orçamento é válido por <strong>7 dias corridos</strong> a partir da data de geração do PDF.<br>
+    Após esse prazo, os valores podem ser revisados. Entre em contato para negociar ou renovar a proposta.
+  </div>
+  <div style="background:#fff8e6;border-left:3px solid #d4a017;padding:12px 28px;font-size:13px;color:#7a5a00;line-height:1.7">
+    ℹ️ <strong>Importante:</strong> Este orçamento estimado não representa o aceite imediato da prestação do serviço. Após o envio, a disponibilidade de agenda será verificada e o início das atividades confirmado em contato direto.
+  </div>
+  <div style="border-top:1px solid var(--border);padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+    <div>
+      <p style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:12px">Sobre o serviço</p>
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:9px">
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">✓</span>Valor referente a <strong style="color:var(--text)">1 assistente</strong> — atividades realizadas pessoalmente por <strong style="color:var(--text)">Bianca Martins</strong></li>
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">✓</span>Pagamento na <strong style="color:var(--text)">assinatura do contrato</strong> — nenhuma atividade é iniciada sem o pagamento</li>
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">✓</span>Não há <strong style="color:var(--text)">reconhecimento de vínculo empregatício</strong></li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:12px">Fale conosco</p>
+      <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:9px">
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">📹</span><span>Agende uma <strong style="color:var(--text)">consulta por vídeo</strong> e conheça o Seu Assistente Virtual</span></li>
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">📸</span><span><a href="https://instagram.com/seuassistentejuridico" target="_blank" style="color:var(--green);text-decoration:none;font-weight:500">@seuassistentejuridico</a> &nbsp;·&nbsp; <a href="https://instagram.com/seuassistente" target="_blank" style="color:var(--green);text-decoration:none;font-weight:500">@seuassistente</a></span></li>
+        <li style="font-size:13px;color:var(--text2);display:flex;gap:10px;align-items:flex-start"><span style="color:var(--green);flex-shrink:0;margin-top:1px">💬</span><a href="https://wa.me/552231999864" target="_blank" style="color:var(--green);text-decoration:none;font-weight:500">+55 22 3199-9864</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer">
+  Calculadora desenvolvida para uso profissional · Secretária Remota
+</footer>
+
+<script>
+const HORA_BASE = 10;
+
+const NICHOS = [
+  {
+    id:'adv', name:'Advocacia', icon:'⚖️', base:150,
+    info:'O atendimento jurídico exige estudo contínuo de terminologia processual, prazos e protocolos específicos. A taxa de nicho reflete essa especialização dedicada ao seu escritório.',
+    servs:['adv-whatsapp','adv-ligacao','adv-agenda','adv-processual','adv-documentos','adv-assinatura','adv-gestao-docs','adv-prazos','adv-crm','adv-relatorios','adv-adm','nao-listado']
+  },
+  {
+    id:'sau', name:'Saúde', icon:'🩺', base:100,
+    info:'Clínicas e profissionais de saúde exigem sigilo, protocolos específicos de agendamento e atendimento ao paciente com cuidado e discrição.',
+    servs:['sau-whatsapp','sau-ligacao','sau-agenda','sau-prontuario','sau-confirmacao','sau-convenio','sau-prazos','sau-relatorios','sau-adm','nao-listado']
+  },
+  {
+    id:'cont', name:'Contabilidade', icon:'🧮', base:80,
+    info:'Escritórios contábeis demandam organização rigorosa de documentos fiscais, controle de prazos legais e comunicação eficiente com clientes.',
+    servs:['cont-whatsapp','cont-documentos','cont-assinatura','cont-prazos','cont-obrigacoes','cont-gestao-docs','cont-relatorios','cont-adm','nao-listado']
+  },
+  {
+    id:'imob', name:'Imobiliário', icon:'🏢', base:80,
+    info:'O mercado imobiliário envolve contratos, assinaturas, visitas e relacionamento constante com compradores, locatários e corretores.',
+    servs:['imob-whatsapp','imob-ligacao','imob-agenda','imob-contratos','imob-assinatura','imob-visitas','imob-crm','imob-relatorios','imob-adm','nao-listado']
+  },
+  {
+    id:'ecom', name:'E-commerce', icon:'🛍️', base:80,
+    info:'Negócios digitais precisam de suporte ágil no atendimento multicanal, gestão de pedidos, SAC e presença ativa nas plataformas de venda.',
+    servs:['ecom-atendimento','ecom-pedidos','ecom-sac','ecom-produtos','ecom-lives','ecom-relatorios','nao-listado']
+  },
+  {
+    id:'rest', name:'Restaurantes e Delivery', icon:'🍽️', base:100,
+    info:'Estabelecimentos de alimentação demandam agilidade em reservas, pedidos online, plataformas de delivery e relacionamento com fornecedores e clientes.',
+    servs:['rest-whatsapp','rest-ligacao','rest-reservas','rest-delivery','rest-fornecedores','rest-redes','rest-relatorios','rest-adm','nao-listado']
+  },
+  {
+    id:'ap', name:'Assistente Pessoal', icon:'🌟', base:200,
+    info:'O serviço pessoal exige alta disponibilidade, discrição e capacidade de antecipar necessidades. Pode incluir exclusividade conforme combinado.',
+    servs:['ap-whatsapp','ap-ligacao','ap-agenda','ap-documentos','ap-assinatura','ap-compras','ap-viagens','ap-pesquisa','ap-adm','nao-listado']
+  },
+  {
+    id:'peq-adv', name:'Pequeno escritório de advocacia', icon:'⚖️', base:0, compact:true, cap:800,
+    info:'Plano compacto para a rotina essencial de um pequeno escritório. Indicado para até 10 clientes por dia e até 3 horas diárias de dedicação.',
+    servs:['adv-whatsapp','adv-ligacao','adv-agenda','adv-documentos','adv-assinatura','adv-gestao-docs','adv-crm','adv-adm','nao-listado']
+  },
+  {
+    id:'peq-neg', name:'Pequeno negócio', icon:'🏪', base:0, compact:true, cap:800,
+    info:'Plano compacto para demandas administrativas e atendimento essencial. Indicado para até 10 clientes por dia e até 3 horas diárias de dedicação.',
+    servs:['peq-whatsapp','peq-ligacao','peq-agenda','peq-cadastro','peq-adm','peq-relatorios','nao-listado']
+  }
+];
+
+const SERVS = [
+  // ── ADVOCACIA ──
+  {id:'adv-whatsapp',  name:'Atendimento via WhatsApp e e-mail', val:90,  desc:'Triagem de mensagens, primeiro contato e encaminhamento'},
+  {id:'adv-ligacao',   name:'Atendimento por ligação',            val:100, desc:'Recepção e realização de chamadas em nome do escritório'},
+  {id:'adv-agenda',    name:'Gestão de agenda do advogado',        val:80,  desc:'Audiências, reuniões, prazos e lembretes'},
+  {id:'adv-processual',name:'Andamento processual',                val:150, desc:'Acompanhamento de até 100 processos/mês'},
+  {id:'adv-documentos',name:'Elaboração de documentos jurídicos',  val:100, desc:'Formatação de petições, contratos e ofícios'},
+  {id:'adv-assinatura',name:'Envio para assinatura digital',        val:80,  desc:'Gestão de assinaturas via DocuSign, D4Sign e similares'},
+  {id:'adv-gestao-docs',name:'Gestão e arquivo de documentos',     val:60,  desc:'Organização, digitalização e controle de versões'},
+  {id:'adv-prazos',    name:'Controle de prazos processuais',       val:150, desc:'Monitoramento de datas críticas e alertas de vencimento'},
+  {id:'adv-crm',       name:'CRM e cadastro de clientes',           val:80,  desc:'Atualização da base de clientes e histórico de atendimento'},
+  {id:'adv-relatorios',name:'Relatórios gerenciais',                val:80,  desc:'Relatórios de produtividade e acompanhamento de casos'},
+  {id:'adv-adm',       name:'Suporte administrativo geral',         val:70,  desc:'Demandas internas do escritório'},
+
+  // ── SAÚDE ──
+  {id:'sau-whatsapp',   name:'Atendimento via WhatsApp e e-mail',   val:90,  desc:'Triagem de pacientes, dúvidas e encaminhamentos'},
+  {id:'sau-ligacao',    name:'Atendimento por ligação',              val:100, desc:'Recepção telefônica da clínica ou consultório'},
+  {id:'sau-agenda',     name:'Gestão de agenda de consultas',        val:80,  desc:'Agendamento, remarcação e lembretes de consultas'},
+  {id:'sau-prontuario', name:'Organização de prontuários',           val:70,  desc:'Digitalização e organização de fichas e documentos de pacientes'},
+  {id:'sau-confirmacao',name:'Confirmação de consultas',             val:60,  desc:'Contato ativo para confirmar e reduzir faltas'},
+  {id:'sau-convenio',   name:'Suporte com convênios e autorizações', val:90,  desc:'Solicitação de autorizações e comunicação com planos de saúde'},
+  {id:'sau-prazos',     name:'Controle de prazos e renovações',      val:100, desc:'Validade de autorizações, licenças e contratos com convênios'},
+  {id:'sau-relatorios', name:'Relatórios de atendimento',            val:80,  desc:'Volume de consultas, faltas e indicadores da clínica'},
+  {id:'sau-adm',        name:'Suporte administrativo geral',         val:70,  desc:'Demandas internas da clínica ou consultório'},
+
+  // ── CONTABILIDADE ──
+  {id:'cont-whatsapp',    name:'Atendimento via WhatsApp e e-mail',  val:90,  desc:'Triagem de clientes, dúvidas e encaminhamentos'},
+  {id:'cont-documentos',  name:'Organização de documentos fiscais',  val:80,  desc:'Coleta, conferência e organização de notas, extratos e recibos'},
+  {id:'cont-assinatura',  name:'Envio de documentos para assinatura',val:80,  desc:'Contratos, declarações e procurações via assinatura digital'},
+  {id:'cont-prazos',      name:'Controle de prazos fiscais',         val:150, desc:'DARF, FGTS, GPS, declarações — monitoramento de vencimentos'},
+  {id:'cont-obrigacoes',  name:'Suporte em obrigações acessórias',   val:100, desc:'Apoio na coleta de dados para SPED, DIRF, e-Social e similares'},
+  {id:'cont-gestao-docs', name:'Gestão e arquivo de documentos',     val:60,  desc:'Digitalização, nomenclatura e arquivamento digital'},
+  {id:'cont-relatorios',  name:'Relatórios e planilhas de controle', val:80,  desc:'Consolidação de dados para análise do escritório'},
+  {id:'cont-adm',         name:'Suporte administrativo geral',       val:70,  desc:'Demandas internas do escritório contábil'},
+
+  // ── IMOBILIÁRIO ──
+  {id:'imob-whatsapp',  name:'Atendimento via WhatsApp e e-mail',    val:90,  desc:'Triagem de leads, clientes e proprietários'},
+  {id:'imob-ligacao',   name:'Atendimento por ligação',              val:100, desc:'Recepção e realização de chamadas para clientes e corretores'},
+  {id:'imob-agenda',    name:'Gestão de agenda de visitas',           val:80,  desc:'Agendamento de visitas a imóveis e reuniões com clientes'},
+  {id:'imob-contratos', name:'Elaboração e revisão de contratos',    val:100, desc:'Minutas de locação, venda e intermediação imobiliária'},
+  {id:'imob-assinatura',name:'Envio para assinatura digital',         val:80,  desc:'Contratos e documentos via assinatura eletrônica'},
+  {id:'imob-visitas',   name:'Coordenação de visitas e chaves',       val:70,  desc:'Organização de roteiros de visitas e controle de chaves'},
+  {id:'imob-crm',       name:'CRM e cadastro de clientes e imóveis',  val:80,  desc:'Atualização da base de leads, clientes e portfólio de imóveis'},
+  {id:'imob-relatorios',name:'Relatórios de negociações',            val:80,  desc:'Pipeline de vendas, locações e indicadores do negócio'},
+  {id:'imob-adm',       name:'Suporte administrativo geral',         val:70,  desc:'Demandas internas da imobiliária ou corretor autônomo'},
+
+  // ── E-COMMERCE ──
+  {id:'ecom-atendimento',name:'Atendimento ao cliente em múltiplas plataformas', val:90,  desc:'Marketplaces, chat do site, e-mail e redes sociais — exceto ligação por voz ou áudio'},
+  {id:'ecom-pedidos',    name:'Gestão de pedidos e carrinho abandonado',          val:100, desc:'Acompanhamento de pedidos, recuperação de carrinhos e pós-venda'},
+  {id:'ecom-sac',        name:'SAC — Serviço de Atendimento ao Cliente',          val:250, desc:'Reclamações, trocas, devoluções e resolução de conflitos'},
+  {id:'ecom-produtos',   name:'Atualização e cadastro de produtos',               val:90,  desc:'Inserção de produtos, descrições, fotos e preços nas plataformas'},
+  {id:'ecom-lives',      name:'Suporte em lives de vendas',                       val:100, desc:'Moderação de comentários, respostas e gestão de pedidos durante lives'},
+  {id:'ecom-relatorios', name:'Relatórios de desempenho',                         val:80,  desc:'Vendas, devoluções, avaliações e indicadores das plataformas'},
+
+  // ── RESTAURANTES E DELIVERY ──
+  {id:'rest-whatsapp',   name:'Atendimento via WhatsApp e e-mail',     val:90,  desc:'Pedidos, dúvidas e atendimento a clientes pelo WhatsApp'},
+  {id:'rest-ligacao',    name:'Atendimento por ligação',                val:100, desc:'Recepção de pedidos e reservas por telefone'},
+  {id:'rest-reservas',   name:'Gestão de reservas e eventos',           val:80,  desc:'Reservas de mesas, salões e eventos especiais'},
+  {id:'rest-delivery',   name:'Suporte a plataformas de delivery',      val:90,  desc:'iFood, Rappi, Ifome — gestão de pedidos, avaliações e cardápio'},
+  {id:'rest-fornecedores',name:'Relacionamento com fornecedores',       val:70,  desc:'Pedidos de insumos, cotações e controle de entregas'},
+  {id:'rest-redes',      name:'Redes sociais e cardápio digital',       val:100, desc:'Postagens, promoções, respostas e atualização do cardápio online'},
+  {id:'rest-relatorios', name:'Relatórios de vendas e delivery',        val:80,  desc:'Desempenho por plataforma, picos de pedido e avaliações'},
+  {id:'rest-adm',        name:'Suporte administrativo geral',           val:70,  desc:'Demandas internas do estabelecimento'},
+
+  // ── ASSISTENTE PESSOAL ──
+  {id:'ap-whatsapp',  name:'Atendimento via WhatsApp e e-mail',         val:90,  desc:'Triagem de mensagens, respostas e filtro de demandas'},
+  {id:'ap-ligacao',   name:'Atendimento por ligação',                    val:100, desc:'Recepção e realização de chamadas em seu nome'},
+  {id:'ap-agenda',    name:'Gestão completa de agenda pessoal',          val:80,  desc:'Compromissos, reuniões, lembretes e organização do dia'},
+  {id:'ap-documentos',name:'Elaboração e organização de documentos',     val:100, desc:'Contratos pessoais, cartas, declarações e formulários'},
+  {id:'ap-assinatura',name:'Envio para assinatura digital',              val:80,  desc:'Documentos pessoais via assinatura eletrônica'},
+  {id:'ap-compras',   name:'Pesquisa e compras online',                  val:80,  desc:'Cotação, comparação e realização de compras'},
+  {id:'ap-viagens',   name:'Organização de viagens',                     val:90,  desc:'Passagens, hospedagens, roteiros e traslados'},
+  {id:'ap-pesquisa',  name:'Pesquisa e curadoria de informações',        val:70,  desc:'Levantamento de dados, opções e informações sob demanda'},
+  {id:'ap-adm',       name:'Suporte administrativo pessoal',             val:70,  desc:'Contas, cobranças, renovações e demandas do dia a dia'},
+
+  // ── PEQUENOS NEGÓCIOS ──
+  {id:'peq-whatsapp', name:'Atendimento via WhatsApp e e-mail',          val:90,  desc:'Triagem de mensagens, dúvidas e encaminhamentos'},
+  {id:'peq-ligacao',  name:'Atendimento por ligação',                     val:100, desc:'Recepção e realização de chamadas do negócio'},
+  {id:'peq-agenda',   name:'Gestão de agenda e compromissos',             val:80,  desc:'Agendamentos, lembretes e organização da rotina'},
+  {id:'peq-cadastro', name:'Cadastro e atualização de clientes',          val:80,  desc:'Organização de dados e histórico de atendimento'},
+  {id:'peq-adm',      name:'Suporte administrativo geral',                val:70,  desc:'Demandas administrativas essenciais do dia a dia'},
+  {id:'peq-relatorios',name:'Relatórios simples de atendimento',          val:70,  desc:'Resumo de atendimentos e demandas recorrentes'},
+
+  // ── GLOBAL ──
+  {id:'nao-listado', name:'Atividade não listada', val:0, desc:'Valor a consultar', consult:true}
+];
+
+const DIAS_CONFIG = {
+  uteis:  { label: 'Dias úteis',       extra: 0  },
+  fds:    { label: 'Fins de semana',   extra: 20 },
+  feriado:{ label: 'Feriados',         extra: 40 },
+  sabado: { label: 'Somente sábados (exceto feriados)', extra: 0 }
+};
+
+let state = {
+  nicho: null,
+  servs: new Set(),
+  operacao: 'mensal',
+  dias: new Set(['uteis']),
+  wpp: null,
+  resposta: null,
+  respostaExtra: 0,
+  horario: 'com',
+  horarioExtra: 0,
+  exclusividade: 'nao',
+  exclusividadeExtra: 0,
+  fuso: 'br',
+  fusoExtra: 0,
+  horas: 2,
+  tabHoras: 'mensal',
+  horasCustom: 2,
+  diasCustom: 7,
+  clientesDia: 1
+};
+
+function renderNichos() {
+  const g = document.getElementById('nichos-grid');
+  NICHOS.forEach(n => {
+    const d = document.createElement('div');
+    d.className = 'nc';
+    d.innerHTML = `<div class="nc-icon">${n.icon}</div><div class="nc-name">${n.name}</div>`;
+    d.onclick = () => selNicho(n, d);
+    g.appendChild(d);
+  });
+}
+
+function selNicho(n, el) {
+  document.querySelectorAll('.nc').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  state.nicho = n;
+  state.servs = new Set();
+  state.wpp = null;
+  state.resposta = null;
+  state.respostaExtra = 0;
+
+  document.getElementById('nicho-info').style.display = 'block';
+  document.getElementById('nicho-info').textContent = n.info;
+  document.getElementById('step-capacidade').style.display = n.compact ? 'block' : 'none';
+
+  // exclusividade só para assistente pessoal
+  document.getElementById('step-exclusividade').style.display = n.id === 'ap' ? 'block' : 'none';
+  if(n.id !== 'ap') { state.exclusividadeExtra = 0; state.exclusividade = 'nao'; }
+
+  // atualiza numeração dos steps dinâmicos
+  updateStepNums();
+
+  renderServicos(n);
+  showSteps();
+  calcular();
+}
+
+function updateStepNums() {
+  const isAP = state.nicho && state.nicho.id === 'ap';
+  document.getElementById('fuso-num').textContent = isAP ? '7' : '6';
+  document.getElementById('horas-num').textContent = isAP ? '8' : '7';
+}
+
+function showSteps() {
+  ['step-servicos','step-operacao','step-dias','step-wpp','step-resposta','step-horario','step-fuso','step-horas'].forEach(id => {
+    document.getElementById(id).style.display = 'block';
+  });
+  // wpp desconto só aparece em mensal
+  document.getElementById('step-wpp').style.display = state.operacao === 'mensal' ? 'block' : 'none';
+}
+
+function selOperacao(el, op) {
+  document.querySelectorAll('[data-op]').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.operacao = op;
+  // esconde desconto WPP se projeto
+  document.getElementById('step-wpp').style.display = op === 'mensal' ? 'block' : 'none';
+  if(op === 'projeto') { state.wpp = null; selWpp(false); }
+  calcular();
+}
+
+function togDia(el, dia) {
+  // uteis é base — pode ser desmarcado se outro dia puro for selecionado
+  if(dia === 'uteis') {
+    // toggle normal
+    if(state.dias.has('uteis')) {
+      // só desmarca se tem outro selecionado
+      if(state.dias.size > 1) { state.dias.delete('uteis'); el.classList.remove('sel'); el.querySelector('.dia-check').style.color = 'transparent'; }
+    } else {
+      state.dias.add('uteis'); el.classList.add('sel'); el.querySelector('.dia-check').style.color = 'white';
+    }
+  } else {
+    if(state.dias.has(dia)) {
+      state.dias.delete(dia); el.classList.remove('sel'); el.querySelector('.dia-check').style.color = 'transparent';
+    } else {
+      state.dias.add(dia); el.classList.add('sel'); el.querySelector('.dia-check').style.color = 'white';
+    }
+  }
+  // garante pelo menos 1
+  if(state.dias.size === 0) { state.dias.add('uteis'); document.querySelector('[data-dia="uteis"]').classList.add('sel'); document.querySelector('[data-dia="uteis"] .dia-check').style.color = 'white'; }
+  updateDiasResumo();
+  calcular();
+}
+
+function updateDiasResumo() {
+  const labels = Array.from(state.dias).map(d => {
+    const c = DIAS_CONFIG[d];
+    return c.extra > 0 ? `${c.label} (+${c.extra}%)` : c.label;
+  });
+  document.getElementById('dias-resumo').textContent = '✔ ' + labels.join(' + ');
+}
+
+function renderServicos(nicho) {
+  const g = document.getElementById('servs-grid');
+  g.innerHTML = '';
+  const lista = SERVS.filter(s => nicho.servs.includes(s.id));
+  lista.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'sv';
+    const tagHtml = s.tag ? `<span class="sv-tag">${s.tag}</span>` : '';
+    const priceHtml = s.consult
+      ? `<div class="sv-price sv-consult">Atendimento sob consulta — entre em contato</div>`
+      : `<div class="sv-price">${s.desc}</div>`;
+    d.innerHTML = `<div class="sv-check">✓</div><div class="sv-body"><div class="sv-name">${s.name}${tagHtml}</div>${priceHtml}</div>`;
+    d.onclick = () => {
+      if(s.consult) { enviarZapConsulta(s.name); return; }
+      togServ(s, d);
+    };
+    g.appendChild(d);
+  });
+}
+
+function togServ(s, el) {
+  if(state.servs.has(s.id)) {
+    state.servs.delete(s.id);
+    el.classList.remove('sel');
+  } else {
+    state.servs.add(s.id);
+    el.classList.add('sel');
+  }
+  calcular();
+}
+
+function selWpp(sim) {
+  state.wpp = sim;
+  document.getElementById('wpp-sim').className = 'tbtn' + (sim ? ' sel-yes' : '');
+  document.getElementById('wpp-nao').className = 'tbtn' + (!sim ? ' sel-no' : '');
+  document.getElementById('wpp-badge').className = sim ? '' : 'hidden';
+  calcular();
+}
+
+function selResposta(el, key, pct) {
+  document.querySelectorAll('#resposta-opts .opt').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.resposta = key;
+  state.respostaExtra = pct;
+  calcular();
+}
+
+function selHorario(el, key, pct) {
+  document.querySelectorAll('[data-h]').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.horario = key;
+  state.horarioExtra = pct;
+  calcular();
+}
+
+function selExclusividade(el, key, pct) {
+  document.querySelectorAll('[data-ex]').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.exclusividade = key;
+  state.exclusividadeExtra = pct;
+  calcular();
+}
+
+function selFuso(el, key, pct) {
+  document.querySelectorAll('[data-f]').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  state.fuso = key;
+  state.fusoExtra = pct;
+  calcular();
+}
+
+document.getElementById('hrange').addEventListener('input', function() {
+  state.horas = parseInt(this.value);
+  document.getElementById('hval').textContent = state.horas + 'h / dia';
+  const hints = ['Rotinas leves e triagem pontual','Ideal para rotinas básicas e comunicações','Suporte consistente e ativo no dia a dia','Cobertura ampla para demandas recorrentes','Equivalente a meio período','Próximo de meio período formal','Alta disponibilidade, quase integral','Período integral — máxima cobertura'];
+  document.getElementById('hhint').textContent = '≈ ' + (state.horas * 22) + 'h/mês · ' + hints[state.horas - 1];
+  calcular();
+});
+
+document.addEventListener('input', function(e) {
+  if(e.target.id === 'clientes-dia') {
+    state.clientesDia = Math.max(1, Math.min(99, parseInt(e.target.value) || 1));
+    e.target.value = state.clientesDia;
+    calcular();
+  }
+  if(e.target.id === 'dias-custom') {
+    const dias = Math.max(1, Math.min(31, parseInt(e.target.value) || 1));
+    document.getElementById('hhint-custom').textContent = '≈ ' + (dias * state.horasCustom) + 'h totais · baseado em ' + dias + ' dia' + (dias > 1 ? 's' : '') + ' × ' + state.horasCustom + 'h';
+    calcular();
+  }
+});
+
+
+function selTabHoras(tab) {
+  state.tabHoras = tab;
+  if(tab === 'mensal') {
+    document.getElementById('tab-mensal').style.background = 'var(--green)';
+    document.getElementById('tab-mensal').style.color = 'white';
+    document.getElementById('tab-custom').style.background = 'var(--bg)';
+    document.getElementById('tab-custom').style.color = 'var(--text2)';
+    document.getElementById('painel-mensal').style.display = 'block';
+    document.getElementById('painel-custom').style.display = 'none';
+  } else {
+    document.getElementById('tab-custom').style.background = 'var(--green)';
+    document.getElementById('tab-custom').style.color = 'white';
+    document.getElementById('tab-mensal').style.background = 'var(--bg)';
+    document.getElementById('tab-mensal').style.color = 'var(--text2)';
+    document.getElementById('painel-mensal').style.display = 'none';
+    document.getElementById('painel-custom').style.display = 'block';
+  }
+  calcular();
+}
+
+function ajustarHorasCustom(delta) {
+  state.horasCustom = Math.max(1, Math.min(12, state.horasCustom + delta));
+  document.getElementById('hval-custom').textContent = state.horasCustom + 'h';
+  const dias = parseInt(document.getElementById('dias-custom').value) || 1;
+  document.getElementById('hhint-custom').textContent = '≈ ' + (dias * state.horasCustom) + 'h totais · baseado em ' + dias + ' dia' + (dias > 1 ? 's' : '') + ' × ' + state.horasCustom + 'h';
+  calcular();
+}
+
+function exibirLimiteCapacidade(horasDia) {
+  const alerta = document.getElementById('limite-alerta');
+  const motivos = [];
+  if(state.clientesDia > 10) motivos.push(`${state.clientesDia} clientes por dia`);
+  if(horasDia > 3) motivos.push(`${horasDia} horas por dia`);
+  document.getElementById('limite-alerta-texto').textContent = `O plano compacto cobre até 10 clientes por dia e até 3 horas por dia. Sua seleção indica ${motivos.join(' e ')}; por isso, ela precisa de uma proposta fora desse limite.`;
+  alerta.style.display = 'block';
+  document.getElementById('resultado').style.display = 'none';
+}
+
+function aplicarTetoCompacto(total, linhasHTML, linhasTexto) {
+  if(!state.nicho.compact || total <= state.nicho.cap) return { total, linhasHTML, linhasTexto };
+  const reducao = total - state.nicho.cap;
+  linhasHTML += `<div class="res-line discount"><span class="key">Limite do plano compacto</span><span class="val">−R$ ${reducao}</span></div>`;
+  linhasTexto.push('Limite do plano compacto aplicado');
+  return { total: state.nicho.cap, linhasHTML, linhasTexto };
+}
+
+function calcular() {
+  const res = document.getElementById('resultado');
+  const alerta = document.getElementById('limite-alerta');
+  alerta.style.display = 'none';
+  if (!state.nicho || state.servs.size === 0) { res.style.display = 'none'; return; }
+
+  const isProjeto = state.operacao === 'projeto';
+  // Calcular horas totais conforme aba selecionada
+  let hmes;
+  if(state.tabHoras === 'mensal') {
+    hmes = state.horas * 22;
+  } else {
+    const diasC = Math.max(1, parseInt((document.getElementById('dias-custom') || {value:'7'}).value) || 1);
+    hmes = diasC * state.horasCustom;
+  }
+  const horasDia = state.tabHoras === 'mensal' ? state.horas : state.horasCustom;
+  if(state.nicho.compact && (state.clientesDia > 10 || horasDia > 3)) {
+    exibirLimiteCapacidade(horasDia);
+    return;
+  }
+  const base = state.nicho.base;
+  const parteHoras = hmes * HORA_BASE;
+
+  const servsSelecionados = SERVS.filter(s => state.servs.has(s.id) && !s.consult);
+  const somaComplexidade = servsSelecionados.reduce((acc, s) => acc + s.val, 0);
+  const fatorServicos = Math.min(somaComplexidade / 1000, 0.8);
+  const adicServicos = Math.round(parteHoras * fatorServicos);
+
+  let linhasHTML = '';
+  let linhasTexto = [`Especialização para ${state.nicho.name}: incluída no cálculo`];
+
+  linhasHTML += `<div class="res-line"><span class="key">Especialização para ${state.nicho.name}</span><span class="val">Incluída</span></div>`;
+  linhasHTML += `<div class="res-line"><span class="key">Horas de trabalho (${state.horas}h/dia × 22 dias × R$ ${HORA_BASE}/h)</span><span class="val">R$ ${parteHoras}</span></div>`;
+  linhasTexto.push(`Horas de trabalho (${state.horas}h × 22 dias × R$${HORA_BASE}): R$ ${parteHoras}`);
+
+  if(servsSelecionados.length > 0) {
+    const nomesServs = servsSelecionados.map(s => s.name).join(', ');
+    linhasHTML += `<div class="res-line"><span class="key">Complexidade dos serviços (${servsSelecionados.length} serviço${servsSelecionados.length>1?'s':''})</span><span class="val">+R$ ${adicServicos}</span></div>`;
+    servsSelecionados.forEach(s => {
+      linhasHTML += `<div class="res-line" style="padding-left:12px;font-size:11px;color:var(--text3)"><span class="key">↳ ${s.name}</span></div>`;
+    });
+    linhasTexto.push(`Serviços: ${nomesServs}`);
+    linhasTexto.push(`Adicional de complexidade: +R$ ${adicServicos}`);
+  }
+
+  let subtotal = base + parteHoras + adicServicos;
+
+  // ── Adicional de dias ──
+  let adicDias = 0;
+  const diasExtras = Array.from(state.dias).filter(d => d !== 'uteis');
+  diasExtras.forEach(dia => {
+    const pct = DIAS_CONFIG[dia].extra;
+    const val = Math.round(subtotal * pct / 100);
+    adicDias += val;
+    linhasHTML += `<div class="res-line surcharge"><span class="key">${DIAS_CONFIG[dia].label} (+${pct}%)</span><span class="val">+R$ ${val}</span></div>`;
+    linhasTexto.push(`${DIAS_CONFIG[dia].label} (+${pct}%): +R$ ${val}`);
+  });
+  subtotal += adicDias;
+
+  if(isProjeto) {
+    // projeto: fator 1.2×, sem descontos de nenhum tipo
+    const fatorProjeto = 1.2;
+    const totalProjeto = Math.round(subtotal * fatorProjeto);
+    const adicProjeto = totalProjeto - subtotal;
+    linhasHTML += `<div class="res-line surcharge"><span class="key">Fator projeto avulso (×${fatorProjeto} — sem descontos)</span><span class="val">+R$ ${adicProjeto}</span></div>`;
+    linhasTexto.push(`Fator projeto avulso (×${fatorProjeto}): +R$ ${adicProjeto}`);
+    subtotal = totalProjeto;
+
+    const compacto = aplicarTetoCompacto(subtotal, linhasHTML, linhasTexto);
+    subtotal = compacto.total;
+    linhasHTML = compacto.linhasHTML;
+    linhasTexto = compacto.linhasTexto;
+    const total = subtotal;
+    const vhora = (total / hmes).toFixed(2).replace('.', ',');
+    res.style.display = 'block';
+    document.getElementById('r-hora').textContent = 'R$ ' + vhora;
+    document.getElementById('r-total').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+    document.getElementById('res-total-big').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+    document.getElementById('r-hmes').textContent = hmes + 'h';
+    document.getElementById('res-linhas').innerHTML = linhasHTML;
+    window._calcState = { total, vhora, hmes, linhasTexto, nicho: state.nicho.name, operacao: 'Projeto avulso' };
+    document.getElementById('r-total-label').textContent = 'Total do projeto';
+    document.getElementById('res-subtitle').textContent = 'Projeto avulso — valor único, sem descontos';
+    return;
+  }
+
+  // ── MENSAL: aplica descontos e adicionais normalmente ──
+
+  // desconto WPP
+  let descontoWpp = 0;
+  if(state.wpp === true) {
+    descontoWpp = Math.round(subtotal * 0.15);
+    linhasHTML += `<div class="res-line discount"><span class="key">Desconto — sistema de gestão WhatsApp (−15%)</span><span class="val">−R$ ${descontoWpp}</span></div>`;
+    linhasTexto.push(`Desconto sistema WhatsApp (−15%): −R$ ${descontoWpp}`);
+    subtotal -= descontoWpp;
+  }
+
+  // adicional resposta
+  let adicResposta = 0;
+  if(state.respostaExtra > 0) {
+    adicResposta = Math.round(subtotal * state.respostaExtra / 100);
+    const label = state.resposta === '5min' ? 'Urgência — até 5 min' : 'Urgência — 5 a 10 min';
+    linhasHTML += `<div class="res-line surcharge"><span class="key">${label} (+${state.respostaExtra}%)</span><span class="val">+R$ ${adicResposta}</span></div>`;
+    linhasTexto.push(`${label} (+${state.respostaExtra}%): +R$ ${adicResposta}`);
+    subtotal += adicResposta;
+  }
+
+  // adicional horário
+  let adicHorario = 0;
+  if(state.horarioExtra > 0) {
+    adicHorario = Math.round(subtotal * state.horarioExtra / 100);
+    linhasHTML += `<div class="res-line surcharge"><span class="key">Horário noturno/madrugada (+${state.horarioExtra}%)</span><span class="val">+R$ ${adicHorario}</span></div>`;
+    linhasTexto.push(`Horário noturno (+${state.horarioExtra}%): +R$ ${adicHorario}`);
+    subtotal += adicHorario;
+  }
+
+  // adicional exclusividade (só AP)
+  let adicExcl = 0;
+  if(state.nicho.id === 'ap' && state.exclusividadeExtra > 0) {
+    adicExcl = Math.round(subtotal * state.exclusividadeExtra / 100);
+    linhasHTML += `<div class="res-line surcharge"><span class="key">Exclusividade (+${state.exclusividadeExtra}%)</span><span class="val">+R$ ${adicExcl}</span></div>`;
+    linhasTexto.push(`Exclusividade (+${state.exclusividadeExtra}%): +R$ ${adicExcl}`);
+    subtotal += adicExcl;
+  }
+
+  // adicional fuso
+  let adicFuso = 0;
+  if(state.fusoExtra > 0) {
+    adicFuso = Math.round(subtotal * state.fusoExtra / 100);
+    linhasHTML += `<div class="res-line surcharge"><span class="key">Fuso internacional (+${state.fusoExtra}%)</span><span class="val">+R$ ${adicFuso}</span></div>`;
+    linhasTexto.push(`Fuso internacional (+${state.fusoExtra}%): +R$ ${adicFuso}`);
+    subtotal += adicFuso;
+  }
+
+  const compacto = aplicarTetoCompacto(subtotal, linhasHTML, linhasTexto);
+  subtotal = compacto.total;
+  linhasHTML = compacto.linhasHTML;
+  linhasTexto = compacto.linhasTexto;
+  const total = subtotal;
+  const vhora = (total / hmes).toFixed(2).replace('.', ',');
+  res.style.display = 'block';
+  document.getElementById('r-hora').textContent = 'R$ ' + vhora;
+  document.getElementById('r-total').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+  document.getElementById('res-total-big').textContent = 'R$ ' + total.toLocaleString('pt-BR');
+  const labelHmes2 = state.tabHoras === 'mensal' ? hmes + 'h/mês' : hmes + 'h (custom)';
+  document.getElementById('r-hmes').textContent = labelHmes2;
+  document.getElementById('res-linhas').innerHTML = linhasHTML;
+  window._calcState = { total, vhora, hmes, linhasTexto, nicho: state.nicho.name, operacao: 'Contrato mensal' };
+  document.getElementById('r-total-label').textContent = 'Total mensal';
+  document.getElementById('res-subtitle').textContent = 'Contrato mensal recorrente';
+}
+
+function exportPDF() {
+  const c = window._calcState;
+  if(!c) return;
+  const dataGeracao = new Date();
+  const dataValidade = new Date(dataGeracao);
+  dataValidade.setDate(dataValidade.getDate() + 7);
+  const fmt = d => d.toLocaleDateString('pt-BR');
+  const linhas = c.linhasTexto.map(l => {
+    const idx = l.indexOf(':');
+    const chave = idx >= 0 ? l.substring(0, idx) : l;
+    const valor = idx >= 0 ? l.substring(idx + 1) : '';
+    return `<tr><td>${chave}</td><td style="text-align:right">${valor}</td></tr>`;
+  }).join('');
+  const diasSel = Array.from(state.dias).map(d => DIAS_CONFIG[d].label).join(', ');
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><title>Orçamento — Secretária Remota</title>
+  <style>body{font-family:Georgia,serif;max-width:580px;margin:40px auto;color:#1a1a1a;padding:20px}
+  h1{font-size:24px;font-weight:normal;margin-bottom:4px}
+  .sub{font-size:12px;color:#888;margin-bottom:28px}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  td{padding:9px 4px;border-bottom:1px solid #eee}td:last-child{text-align:right;font-weight:500}
+  .total-row td{border-top:2px solid #1a7a5e;border-bottom:none;font-size:15px;color:#1a7a5e;padding-top:14px}
+  .validade{margin-top:28px;background:#f5faf8;border-left:3px solid #1a7a5e;padding:12px 16px;font-size:12px;color:#444;line-height:1.7}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:28px;border-top:1px solid #eee;padding-top:24px}
+  .info-col h3{font-size:10px;font-weight:normal;text-transform:uppercase;letter-spacing:.08em;color:#aaa;margin-bottom:12px;font-family:sans-serif}
+  .info-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+  .info-col li{font-size:12px;color:#555;line-height:1.6;font-family:sans-serif;display:flex;gap:8px}
+  .info-col li span.ic{color:#1a7a5e;flex-shrink:0}
+  .info-col a{color:#1a7a5e;text-decoration:none}
+  .footer{margin-top:28px;font-size:11px;color:#bbb;text-align:center;font-family:sans-serif;border-top:1px solid #eee;padding-top:16px}</style>
+  </head><body>
+  <h1>Orçamento estimado</h1>
+  <div class="sub">Secretária Remota · Bianca Martins · Gerado em ${fmt(dataGeracao)}</div>
+  <table>
+  <tr><td>Tipo de contratação</td><td style="text-align:right">${c.operacao}</td></tr>
+  <tr><td>Dias de atendimento</td><td style="text-align:right">${diasSel}</td></tr>
+  ${linhas}<tr class="total-row"><td>Total mensal estimado</td><td>R$ ${c.total.toLocaleString('pt-BR')}</td></tr>
+  <tr><td style="border:none;color:#888;font-size:12px">Valor por hora</td><td style="border:none;color:#888;font-size:12px">R$ ${c.vhora}</td></tr>
+  <tr><td style="border:none;color:#888;font-size:12px">Horas/mês</td><td style="border:none;color:#888;font-size:12px">${c.hmes}h</td></tr></table>
+  <div class="validade">⏳ <strong>Validade da proposta:</strong> Este orçamento é válido até <strong>${fmt(dataValidade)}</strong> (7 dias corridos a partir da data de geração). Após esse prazo, os valores poderão ser revisados.</div>
+  <div class="info-grid">
+    <div class="info-col">
+      <h3>Sobre o serviço</h3>
+      <ul>
+        <li><span class="ic">✓</span>Valor referente a <strong>1 assistente</strong> — atividades realizadas pessoalmente por <strong>Bianca Martins</strong></li>
+        <li><span class="ic">✓</span>Pagamento na <strong>assinatura do contrato</strong> — nenhuma atividade é iniciada sem o pagamento</li>
+        <li><span class="ic">✓</span>Não há reconhecimento de <strong>vínculo empregatício</strong></li>
+      </ul>
+    </div>
+    <div class="info-col">
+      <h3>Fale conosco</h3>
+      <ul>
+        <li><span class="ic">📹</span>Agende uma <strong>consulta por vídeo</strong> e conheça o Seu Assistente Virtual</li>
+        <li><span class="ic">📸</span><a href="https://instagram.com/seuassistentejuridico">@seuassistentejuridico</a> · <a href="https://instagram.com/seuassistente">@seuassistente</a></li>
+        <li><span class="ic">💬</span>WhatsApp: <a href="https://wa.me/552231999864">+55 22 3199-9864</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer">Este é um orçamento estimado · Secretária Remota · seuassistentejuridico</div>
+  </body></html>`;
+  const blob = new Blob([html], {type:'text/html'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'orcamento-secretaria-remota.html';
+  a.click();
+}
+
+function enviarZap() {
+  const c = window._calcState;
+  if(!c) return;
+  const linhas = c.linhasTexto.join('\n');
+  const msg = `Olá! Simulei meu orçamento pela calculadora 🧾\n\n*Segmento:* ${c.nicho}\n\n*Detalhamento:*\n${linhas}\n\n*Valor por hora:* R$ ${c.vhora}\n*Horas/mês:* ${c.hmes}h\n*Total mensal estimado:* R$ ${c.total.toLocaleString('pt-BR')}\n\nGostaria de conversar sobre o pacote!`;
+  window.open('https://wa.me/552231999864?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function enviarContraproposta() {
+  const c = window._calcState;
+  if(!c) return;
+  const msg = `Olá! Recebi o orçamento pela calculadora e gostaria de enviar uma contraproposta 🤝\n\n*Segmento:* ${c.nicho}\n*Total gerado pela calculadora:* R$ ${c.total.toLocaleString('pt-BR')}/mês\n*Horas/mês:* ${c.hmes}h\n\n*Minha proposta:*\n_(descreva aqui o valor ou condições que deseja negociar)_\n\nAguardo retorno. Obrigado(a)!`;
+  window.open('https://wa.me/552231999864?text=' + encodeURIComponent(msg), '_blank');
+}
+
+
+function enviarZapConsulta(servico) {
+  const msg = `Olá! Tenho interesse no serviço "${servico}" que não está listado na calculadora. Gostaria de saber o valor e mais informações.`;
+  window.open('https://wa.me/552231999864?text=' + encodeURIComponent(msg), '_blank');
+}
+
+function enviarZapLimite() {
+  const horasDia = state.tabHoras === 'mensal' ? state.horas : state.horasCustom;
+  const msg = `Olá! Gostaria de uma contratação personalizada para ${state.nicho ? state.nicho.name : 'meu negócio'}. Minha necessidade é de ${state.clientesDia} clientes por dia e ${horasDia} horas por dia.`;
+  window.open('https://wa.me/552231999864?text=' + encodeURIComponent(msg), '_blank');
+}
+
+renderNichos();
+</script>
+</body>
+</html>
